@@ -67,7 +67,7 @@ public class PrismPythonTalker
 			prism = new Prism( mainLog);
 			prism.initialise();
 			setExports();
-			prism.setEngine(Prism.EXPLICIT);
+			//prism.setEngine(Prism.EXPLICIT);
 		} catch (PrismException e) {
 			System.out.println("Error: " + e.getMessage());
 		} catch (IOException e) {
@@ -93,6 +93,7 @@ public class PrismPythonTalker
 
 	public void setExports(){
 		try {
+			prism.getSettings().set(PrismSettings.PRISM_VERBOSE, true);
 			prism.getSettings().set(PrismSettings.PRISM_EXPORT_ADV, "DTMC");
 			prism.getSettings().set(PrismSettings.PRISM_EXPORT_ADV_FILENAME,directory + "/adv.tra");
 			prism.setExportProductStates(true);
@@ -127,11 +128,10 @@ public class PrismPythonTalker
 
 	public boolean callPrismPartial(String ltlString) {
 		try {
-			Result result;
 			PropertiesFile prismSpec;
 			if (loadPrismModelFile()) {
 				prismSpec=prism.parsePropertiesString(currentModel, ltlString);
-				result = prism.modelCheck(prismSpec, prismSpec.getPropertyObject(0));
+				Result result = prism.modelCheck(prismSpec, prismSpec.getPropertyObject(0));
 				return true;
 			}
 			else {
@@ -143,6 +143,26 @@ public class PrismPythonTalker
 			return false;
 		}
 	}
+	
+	public boolean callPrismMO(String ltlString) {
+		try {
+			PropertiesFile prismSpec;
+			if (loadPrismModelFile()) {
+				prismSpec=prism.parsePropertiesString(currentModel, ltlString);
+				System.out.println(prismSpec.getPropertyObject(0));
+				Result result = prism.modelCheck(prismSpec, prismSpec.getPropertyObject(0));
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch (PrismException e) {
+			System.out.println("Error: " + e.getMessage());
+			return false;
+		}
+	}
+	
 
 	public Result callPrism(String ltlString, boolean generatePolicy, boolean getStateVector)  {
 		try {
@@ -183,7 +203,7 @@ public class PrismPythonTalker
 
 	public static void main(String args[]) throws Exception {
 		String command;
-		List<String> commands=Arrays.asList(new String[] {"check", "plan", "get_vector", "partial_sat_guarantees", "shutdown"});
+		List<String> commands=Arrays.asList(new String[] {"check", "plan", "get_vector", "partial_sat_guarantees", "multi_objective", "shutdown"});
 		String ack;
 		String toClient;
 		String ltlString;
@@ -255,6 +275,16 @@ public class PrismPythonTalker
 				if (command.equals("partial_sat_guarantees")){
 					ltlString=in.readLine();
 					success = talker.callPrismPartial(ltlString);
+					if (success){
+						out.println("success");
+					} else {
+						out.println("failure");
+					}
+					continue;
+				}
+				if (command.equals("multi_objective")) {
+					ltlString = in.readLine(); //TODO In fact this is a prism property string
+					success = talker.callPrismMO(ltlString);
 					if (success){
 						out.println("success");
 					} else {

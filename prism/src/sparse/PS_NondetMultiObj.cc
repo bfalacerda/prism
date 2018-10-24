@@ -39,6 +39,7 @@
 #include "PrismSparseGlob.h"
 #include "jnipointer.h"
 #include <new>
+#include <string>
 
 //The following gives more output on stdout. In fact quite a lot of it, usable only for ~10 state examples 
 //#define MORE_OUTPUT
@@ -691,6 +692,26 @@ JNIEXPORT jdoubleArray __jlongpointer JNICALL Java_sparse_PrismSparse_PS_1Nondet
 		if (export_adv_enabled != EXPORT_ADV_NONE) {
 			fclose(fp_adv);
 			PS_PrintToMainLog(env, "\nAdversary written to file \"%s\".\n", export_adv_filename);
+		}
+
+		// export individual vectors
+		bool export_vectors = true;
+		if (export_adv_enabled != EXPORT_ADV_NONE && export_vectors) {
+			for (int it = 0; it < lenRew + lenProb; it++) {
+				if (it != ignoredWeight) {
+					std::string export_vect_filename(export_adv_filename);
+					export_vect_filename += ".vec";
+					export_vect_filename += std::to_string(it);
+					FILE *fp_vect = fopen(export_vect_filename.c_str(), "w");
+					if (fp_vect) {
+						PS_PrintWarningToMainLog(env, "Exporting solution vector %d to file %s.", it, export_vect_filename.c_str());
+						for (i = 0; i < n; i++) {
+							fprintf(fp_vect, "%d %g\n", i, psoln[it][i]);
+						}
+						fclose(fp_vect);
+					}
+				}
+			}
 		}
 	
 	// catch exceptions: register error, free memory
