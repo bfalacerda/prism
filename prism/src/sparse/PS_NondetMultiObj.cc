@@ -117,6 +117,8 @@ JNIEXPORT jdoubleArray __jlongpointer JNICALL Java_sparse_PrismSparse_PS_1Nondet
 	jdoubleArray ret = 0;
 	// local copy of max_iters, since we will change it
 	int max_iters_local = max_iters;
+	// whether to export individual solution vectors (with adversaries)
+	bool export_vectors = false;
 	
 	// Extract some info about objectives
 	bool has_rewards = _ndsm_r != 0;
@@ -695,7 +697,8 @@ JNIEXPORT jdoubleArray __jlongpointer JNICALL Java_sparse_PrismSparse_PS_1Nondet
 		}
 
 		// export individual vectors
-		bool export_vectors = true;
+		bool export_vectors = false;
+		// export individual solution vectors
 		if (export_adv_enabled != EXPORT_ADV_NONE && export_vectors) {
 			for (int it = 0; it < lenRew + lenProb; it++) {
 				if (it != ignoredWeight) {
