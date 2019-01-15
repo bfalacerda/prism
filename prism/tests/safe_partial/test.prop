@@ -1,0 +1,3 @@
+Pmax=? [(F p=3) & (G p!=2)]
+
+partial(R{"time"}min=? [(F (p=3 & (F p=0))) & (G p!=2) ])

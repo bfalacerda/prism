@@ -45,6 +45,7 @@ import prism.PrismNotSupportedException;
 import prism.PrismPrintStreamLog;
 import acceptance.AcceptanceOmega;
 import acceptance.AcceptanceRabin;
+import acceptance.AcceptanceRabin.RabinPair;
 import acceptance.AcceptanceReach;
 
 /**
@@ -481,15 +482,20 @@ public class DA<Symbol, Acceptance extends AcceptanceOmega>
 	 */
 	public void setDistancesToAcc()
 	{		
+		
+		BitSet acc;
 		//Check if its a DFA
-		if (!(acceptance instanceof AcceptanceReach)) {
-			distsToAcc=null;
-			return;
+		if (acceptance instanceof AcceptanceReach) {
+			acc = ((AcceptanceReach)acceptance).getGoalStates();
+		} else if (acceptance instanceof AcceptanceRabin) {
+				acc = getRabinAccStates();
+			} else {
+				return;
 		}
 		
 		//initialise distances list
 		distsToAcc = new ArrayList<Double>(size);
-		BitSet acc = ((AcceptanceReach)acceptance).getGoalStates();				
+				
 		int i, j;
 		Deque<Integer> queue = new ArrayDeque<Integer>();
 		for(i = 0; i < size; i++) {
@@ -538,6 +544,17 @@ public class DA<Symbol, Acceptance extends AcceptanceOmega>
                     //distsToAcc.set(i, Math.max(0, Math.log(distsToAcc.get(i)/minDist)/Math.log(2)+1));
                    // System.out.println(distsToAcc.get(i));
                 //}
+	}
+	
+	public BitSet getRabinAccStates()
+	{	
+		BitSet acc = new BitSet();
+		AcceptanceRabin acceptance = (AcceptanceRabin)getAcceptance();
+		for (RabinPair pair : acceptance ) {
+			acc.or(pair.getK());
+		}
+		System.out.println("GET ACC");
+		return acc;
 	}
 
 	/**

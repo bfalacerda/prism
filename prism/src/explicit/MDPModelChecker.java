@@ -66,6 +66,7 @@ import prism.PrismUtils;
 import strat.MDStrategyArray;
 import strat.MDStrategy;
 import acceptance.AcceptanceOmega;
+import acceptance.AcceptanceRabin;
 import acceptance.AcceptanceReach;
 import acceptance.AcceptanceType;
 import automata.DA;
@@ -142,8 +143,8 @@ public class MDPModelChecker extends ProbModelChecker
 		labelBS = new Vector<BitSet>();
 		da = mcLtl.constructDAForLTLFormula(this, model, ltl, labelBS, allowedAcceptance);
 		
-		if (!(da.getAcceptance() instanceof AcceptanceReach)) {
-			mainLog.println("\nAutomaton is not a DFA. Breaking.");
+		if (!(da.getAcceptance() instanceof AcceptanceReach) && !(da.getAcceptance() instanceof AcceptanceRabin)) {
+			mainLog.println("\nAutomaton is not supported. Breaking.");
 			// Dummy return vector
 			return  new StateValues(TypeInt.getInstance(), model); 
 		}
