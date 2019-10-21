@@ -42,10 +42,11 @@ import parser.ast.Expression;
 import parser.ast.RewardStruct;
 import parser.type.Type;
 import parser.type.TypeInt;
+import simulator.ModulesFileModelGenerator;
 
-public class ProductModelGenerator implements ModelGenerator
+public class ProductModelGenerator implements ModelGenerator, RewardGenerator
 {
-	protected ModelGenerator modelGen = null;
+	protected ModulesFileModelGenerator modelGen = null;
 	/** The DA used to build the product */
 	protected DA<BitSet, ? extends AcceptanceOmega> da = null;
 	/** The expressions for the labels (APs) in the DA */
@@ -78,7 +79,7 @@ public class ProductModelGenerator implements ModelGenerator
 	
 	// Constructor(s)
 	
-	public ProductModelGenerator(ModelGenerator modelGen, DA<BitSet, ? extends AcceptanceOmega> da, List<Expression> labelExprs)
+	public ProductModelGenerator(ModulesFileModelGenerator modelGen, RewardGenerator rewGen, DA<BitSet, ? extends AcceptanceOmega> da, List<Expression> labelExprs)
 	{
 		this.modelGen = modelGen;
 		this.da = da;
@@ -240,7 +241,7 @@ public class ProductModelGenerator implements ModelGenerator
 	}
 
 	@Override
-	public RewardStruct getRewardStruct(int i)
+	public RewardStruct getRewardStruct(int i) throws PrismException
 	{
 		return modelGen.getRewardStruct(i);
 	}
@@ -299,7 +300,6 @@ public class ProductModelGenerator implements ModelGenerator
 		exploreDaState = ((Integer) exploreState.varValues[numVars - 1]).intValue();
 	}
 
-	@Override
 	public State getExploreState()
 	{
 		return exploreState;
@@ -323,10 +323,9 @@ public class ProductModelGenerator implements ModelGenerator
 		return modelGen.getNumTransitions(i);
 	}
 
-	@Override
 	public Object getTransitionAction(int i) throws PrismException
 	{
-		return modelGen.getTransitionAction(i);
+		return modelGen.getTransitionAction(i, 0);
 	}
 
 	@Override

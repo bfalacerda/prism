@@ -184,7 +184,7 @@ public class MCTSModelChecker extends PrismComponent
 		da.setDistancesToAcc();
 		da.printDot(mainLog);
 		ModulesFileModelGenerator prismModelGen = new ModulesFileModelGenerator(modulesFile, this);
-		ProductModelGenerator prodModelGen = new ProductModelGenerator(prismModelGen, da, labelExprs);
+		ProductModelGenerator prodModelGen = new ProductModelGenerator(prismModelGen, prismModelGen, da, labelExprs);
 		
 		BitSet acc = da.getAccStates();
 		BitSet sinkStates = da.getSinkStates();
